@@ -21,7 +21,8 @@
 		"php": ">=5.6.0",
 		"ext-mcrypt": "*",
 		"cakephp/cakephp": "~2.9",
-	  	"vlucas/phpdotenv": "^3.1"
+	  	"vlucas/phpdotenv": "^3.1",
+		"electrolinux/phpquery": "^0.9.6"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*"
