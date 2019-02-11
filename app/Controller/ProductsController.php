@@ -6,8 +6,14 @@ class ProductsController extends AppController
 
 	public $layout = '';
 
-	public function index() {
+	public $uses = [
+		'Product',
+	];
 
+	public function index()
+	{
+		$productList = $this->Product->find('all');
+		$this->set('productList', $productList);
 	}
 
 }
