@@ -1,18 +1,26 @@
 <?php
 
 /**
- * cron情報を管理するクラス
+ * cron設定情報を管理するクラス
  * Class CronShell
  */
 class CronShell extends AppShell
 {
 
+	/**
+	 * cron設定情報をファイルに書き出す
+	 */
 	public function main()
 	{
 		$cmd = 'echo \''.trim($this->getStr()).'\' > '.PATH_TO_APP_DIR.'/cron/cron';
 		exec($cmd);
 	}
 
+	/**
+	 * cronの設定情報を返します
+	 * 新たにcron設定を追加する時はここに追記する
+	 * @return string
+	 */
 	public function getStr()
 	{
 		$str = '';

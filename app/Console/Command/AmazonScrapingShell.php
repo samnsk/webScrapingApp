@@ -7,6 +7,10 @@ class AmazonScrapingShell extends AppShell
 		'Product'
 	];
 
+	/**
+	 * AmazonからJOYの商品情報を取得します
+	 * @throws Exception
+	 */
 	public function main()
 	{
 		$this->log('---------------------------------------------------------------', CRON_LOG);
@@ -56,6 +60,12 @@ class AmazonScrapingShell extends AppShell
 		$this->log('---------------------------------------------------------------', CRON_LOG);
 	}
 
+	/**
+	 * 同一の商品コードがDBに存在するかチェック
+	 *
+	 * @param $productCode
+	 * @return bool
+	 */
 	private function __productCodeExist($productCode)
 	{
 		$productCodeList = $this->Product->find('all', [
