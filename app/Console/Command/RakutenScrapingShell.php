@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * 楽天から商品情報を取得するクラス
+ *
+ * Class RakutenScrapingShell
+ */
 class RakutenScrapingShell extends AppShell
 {
 
@@ -15,42 +20,43 @@ class RakutenScrapingShell extends AppShell
 	{
 		$this->log('---------------------------------------------------------------', CRON_LOG);
 		$this->log('楽天の集計を始めます', CRON_LOG);
-		$html = file_get_contents(AMAZON_JOY);
+		$html = file_get_contents(RAKUTEN_JOY);
 		$doc = phpQuery::newDocument($html);
 		try {
-			foreach ($doc->find('.s-result-item') as $item) {
-				$smallCategory = pq($item)->find('.s-item-container')->find('.a-spacing-mini')->find('.a-spacing-none')->eq(1)->text();
-				if ($smallCategory === 'ジョイ') {
+			foreach ($doc->find('.searchresultitem') as $item) {
 
-					// 取得済みの商品は保存しない
-					$productCode = pq($item)->attr('data-asin');
-					if ($this->__productCodeExist($productCode)) {
-						continue;
-					}
-					$this->log(' 楽天: '.'商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
-
-					$productName = pq($item)->find('h2')->text();
-					$productImageUrl = pq($item)->find('.a-column')->find('img')->attr('src');
-					$productUrl = pq($item)->find('.s-item-container')->find('.a-spacing-mini')->find('.a-spacing-none')->find('.a-link-normal')->attr('href');
-					$productPrice = pq($item)->find('.s-item-container')->find('.a-color-price')->text();
-					$productPrice = trim(str_replace(['￥', ','], '', $productPrice));
-
-					$productData = [
-						'Product' => [
-							'name' => $productName,
-							'code' => $productCode,
-							'image_url' => $productImageUrl,
-							'big_category' => DAILY_USE_ITEM,
-							'small_category' => $smallCategory,
-							'url' => $productUrl,
-							'description' => null,
-							'price' => $productPrice
-						],
-					];
-
-					$this->Product->create();
-					$this->Product->save($productData);
+				// 取得済みの商品は保存しない
+				$productCode = pq($item)->attr('data-id');
+				$this->out($productCode);
+				if ($this->__productCodeExist($productCode)) {
+					continue;
 				}
+				$this->out('aa');
+				$this->log(' RAKUTEN: 商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
+
+				$productName = pq($item)->find('.title')->find('h2')->find('a')->attr('title');
+				if (strpos($productName, JOY) === false) {
+					continue;
+				}
+
+				$productImageUrl = pq($item)->find('.image')->find('img')->attr('src');
+				$productUrl = pq($item)->find('.image')->find('a')->attr('href');
+				$productPrice = str_replace(['円', ','], '', pq($item)->find('.price')->find('.important')->text());
+
+				$productData = [
+					'Product' => [
+						'name' => $productName,
+						'code' => $productCode,
+						'image_url' => $productImageUrl,
+						'big_category' => DAILY_USE_ITEM,
+						'url' => $productUrl,
+						'description' => null,
+						'price' => $productPrice
+					],
+				];
+
+				$this->Product->create();
+				$this->Product->save($productData);
 			}
 		} catch (Exception $e) {
 			$this->log('楽天の集計中にエラーが発生しました[エラー内容:'.$e->getMessage().']', CRON_LOG);
@@ -63,8 +69,8 @@ class RakutenScrapingShell extends AppShell
 	/**
 	 * 同一の商品コードがDBに存在するかチェック
 	 *
-	 * @param $productCode
-	 * @return bool
+	 * @param string $productCode
+	 * @return bool 商品コードがDBに存在する場合は true
 	 */
 	private function __productCodeExist($productCode)
 	{
