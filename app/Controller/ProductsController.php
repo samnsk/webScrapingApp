@@ -15,7 +15,7 @@ class ProductsController extends AppController
 
 	public function index()
 	{
-		$productList = $this->Product->find('all');
+		$productList = $this->Product->findOrderByPrice();
 		$this->set('productList', $productList);
 	}
 
