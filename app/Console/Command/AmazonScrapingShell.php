@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Amazonから商品情報を取得するクラス
+ *
+ * Class AmazonScrapingShell
+ */
 class AmazonScrapingShell extends AppShell
 {
 
@@ -20,37 +25,37 @@ class AmazonScrapingShell extends AppShell
 		try {
 			foreach ($doc->find('.s-result-item') as $item) {
 				$smallCategory = pq($item)->find('.s-item-container')->find('.a-spacing-mini')->find('.a-spacing-none')->eq(1)->text();
-				if ($smallCategory === 'ジョイ') {
-
-					// 取得済みの商品は保存しない
-					$productCode = pq($item)->attr('data-asin');
-					if ($this->__productCodeExist($productCode)) {
-						continue;
-					}
-					$this->log(' AMAZON: '.'商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
-
-					$productName = pq($item)->find('h2')->text();
-					$productImageUrl = pq($item)->find('.a-column')->find('img')->attr('src');
-					$productUrl = pq($item)->find('.s-item-container')->find('.a-spacing-mini')->find('.a-spacing-none')->find('.a-link-normal')->attr('href');
-					$productPrice = pq($item)->find('.s-item-container')->find('.a-color-price')->text();
-					$productPrice = trim(str_replace(['￥', ','], '', $productPrice));
-
-					$productData = [
-						'Product' => [
-							'name' => $productName,
-							'code' => $productCode,
-							'image_url' => $productImageUrl,
-							'big_category' => DAILY_USE_ITEM,
-							'small_category' => $smallCategory,
-							'url' => $productUrl,
-							'description' => null,
-							'price' => $productPrice
-						],
-					];
-
-					$this->Product->create();
-					$this->Product->save($productData);
+				if ($smallCategory !== 'ジョイ') {
+					continue;
 				}
+				// 取得済みの商品は保存しない
+				$productCode = pq($item)->attr('data-asin');
+				if ($this->__productCodeExist($productCode)) {
+					continue;
+				}
+				$this->log(' AMAZON: 商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
+
+				$productName = pq($item)->find('h2')->text();
+				$productImageUrl = pq($item)->find('.a-column')->find('img')->attr('src');
+				$productUrl = pq($item)->find('.s-item-container')->find('.a-spacing-mini')->find('.a-spacing-none')->find('.a-link-normal')->attr('href');
+				$productPrice = pq($item)->find('.s-item-container')->find('.a-color-price')->text();
+				$productPrice = trim(str_replace(['￥', ','], '', $productPrice));
+
+				$product = [
+					'Product' => [
+						'name' => $productName,
+						'code' => $productCode,
+						'image_url' => $productImageUrl,
+						'big_category' => DAILY_USE_ITEM,
+						'small_category' => $smallCategory,
+						'url' => $productUrl,
+						'description' => null,
+						'price' => $productPrice
+					],
+				];
+
+				$this->Product->create();
+				$this->Product->save($product);
 			}
 		} catch (Exception $e) {
 			$this->log('AMAZONの集計中にエラーが発生しました[エラー内容:'.$e->getMessage().']', CRON_LOG);
@@ -64,7 +69,7 @@ class AmazonScrapingShell extends AppShell
 	 * 同一の商品コードがDBに存在するかチェック
 	 *
 	 * @param $productCode
-	 * @return bool
+	 * @return bool 商品コードがDBに存在する場合は true
 	 */
 	private function __productCodeExist($productCode)
 	{
@@ -73,7 +78,7 @@ class AmazonScrapingShell extends AppShell
 		]);
 		$productCodeList = Hash::extract($productCodeList, '{n}.Product.code');
 
-		return in_array($productCode, $productCodeList);
+		return in_array($productCode, $productCodeList, true);
 	}
 
 }
