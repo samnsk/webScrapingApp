@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * 楽天から商品情報を取得するクラス
+ *
+ * Class RakutenScrapingShell
+ */
+class RakutenScrapingShell extends AppShell
+{
+
+	public $uses = [
+		'Product'
+	];
+
+	/**
+	 * AmazonからJOYの商品情報を取得します
+	 * @throws Exception
+	 */
+	public function main()
+	{
+		$this->log('---------------------------------------------------------------', CRON_LOG);
+		$this->log('楽天の集計を始めます', CRON_LOG);
+		$html = file_get_contents(RAKUTEN_JOY);
+		$doc = phpQuery::newDocument($html);
+		try {
+			foreach ($doc->find('.searchresultitem') as $item) {
+
+				// 取得済みの商品は保存しない
+				$productCode = pq($item)->attr('data-id');
+				$this->out($productCode);
+				if ($this->__productCodeExist($productCode)) {
+					continue;
+				}
+				$this->out('aa');
+				$this->log(' RAKUTEN: 商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
+
+				$productName = pq($item)->find('.title')->find('h2')->find('a')->attr('title');
+				if (strpos($productName, JOY) === false) {
+					continue;
+				}
+
+				$productImageUrl = pq($item)->find('.image')->find('img')->attr('src');
+				$productUrl = pq($item)->find('.image')->find('a')->attr('href');
+				$productPrice = str_replace(['円', ','], '', pq($item)->find('.price')->find('.important')->text());
+
+				$productData = [
+					'Product' => [
+						'name' => $productName,
+						'code' => $productCode,
+						'image_url' => $productImageUrl,
+						'big_category' => DAILY_USE_ITEM,
+						'url' => $productUrl,
+						'description' => null,
+						'price' => $productPrice
+					],
+				];
+
+				$this->Product->create();
+				$this->Product->save($productData);
+			}
+		} catch (Exception $e) {
+			$this->log('楽天の集計中にエラーが発生しました[エラー内容:'.$e->getMessage().']', CRON_LOG);
+			throw $e;
+		}
+		$this->log('楽天の集計を終了します', CRON_LOG);
+		$this->log('---------------------------------------------------------------', CRON_LOG);
+	}
+
+	/**
+	 * 同一の商品コードがDBに存在するかチェック
+	 *
+	 * @param string $productCode
+	 * @return bool 商品コードがDBに存在する場合は true
+	 */
+	private function __productCodeExist($productCode)
+	{
+		$productCodeList = $this->Product->find('all', [
+			'fields' => 'code'
+		]);
+		$productCodeList = Hash::extract($productCodeList, '{n}.Product.code');
+
+		return in_array($productCode, $productCodeList);
+	}
+
+}
