@@ -68,7 +68,7 @@ class AmazonScrapingShell extends AppShell
 	/**
 	 * 同一の商品コードがDBに存在するかチェック
 	 *
-	 * @param $productCode
+	 * @param string $productCode
 	 * @return bool 商品コードがDBに存在する場合は true
 	 */
 	private function __productCodeExist($productCode)
