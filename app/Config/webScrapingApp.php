@@ -14,5 +14,8 @@ define('AMAZON_JOY', 'https://www.amazon.co.jp/s/ref=sr_pg_2?rh=i%3Aaps%2Ck%3A%E
 // 楽天
 define('RAKUTEN_JOY', 'https://search.rakuten.co.jp/search/mall/%E3%82%B8%E3%83%A7%E3%82%A4/');
 
+// モノタロウ
+define('YAHOO_JOY', 'https://shopping.yahoo.co.jp/search?p=JOY&tab_ex=commerce&oq=&pf=&pt=&ei=UTF-8&uIv=on&brandid=946');
+
 // webScraping/appの絶対パス
 define('PATH_TO_APP_DIR', getenv('PATH_TO_APP_DIR'));
