@@ -4,7 +4,7 @@
 		<div class="card-body">
 			<h5 class="card-title"><a href="<?= $item['Product']['url']; ?>"><?= $item['Product']['name']; ?></a></h5>
 			<p class="card-text"><?= $item['Product']['description']; ?></p>
-			<span class="product-price">¥<?= $item['Product']['price']; ?></span><br>
+			<span class="product-price">¥<?= number_format($item['Product']['price']); ?></span><br>
 			<a href="<?= $item['Product']['url']; ?>" class="btn btn-primary detail-btn">詳細を見る</a>
 		</div>
 	</div>
