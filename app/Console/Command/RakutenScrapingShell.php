@@ -27,11 +27,9 @@ class RakutenScrapingShell extends AppShell
 
 				// 取得済みの商品は保存しない
 				$productCode = pq($item)->attr('data-id');
-				$this->out($productCode);
 				if ($this->__productCodeExist($productCode)) {
 					continue;
 				}
-				$this->out('aa');
 				$this->log(' RAKUTEN: 商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
 
 				$productName = pq($item)->find('.title')->find('h2')->find('a')->attr('title');
