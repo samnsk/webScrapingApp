@@ -25,7 +25,7 @@ class AmazonScrapingShell extends AppShell
 		try {
 			foreach ($doc->find('.s-result-item') as $item) {
 				$smallCategory = pq($item)->find('.s-item-container')->find('.a-spacing-mini')->find('.a-spacing-none')->eq(1)->text();
-				if ($smallCategory === 'ジョイ') {
+				if ($smallCategory !== 'ジョイ') {
 					continue;
 				}
 				// 取得済みの商品は保存しない
