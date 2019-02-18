@@ -5,7 +5,7 @@ main {
 	margin: 0 0 10px 0 !important;
 	border: none !important;
 }
-.card:hover {
+.item:hover {
 	box-shadow: 2px 2px 4px 1px gray;
 	transition: 0.3s;
 }
@@ -19,4 +19,12 @@ main {
 }
 .detail-btn {
 	margin-top: 10px;
+}
+.nav {
+	max-width: 300px;
+	margin: 0 auto;
+	margin-bottom: 30px;
+}
+.pagination {
+	margin: 0 auto;
 }
