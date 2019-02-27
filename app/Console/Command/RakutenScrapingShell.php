@@ -13,7 +13,7 @@ class RakutenScrapingShell extends AppShell
 	];
 
 	/**
-	 * AmazonからJOYの商品情報を取得します
+	 * 楽天からJOYの商品情報を取得します
 	 * @throws Exception
 	 */
 	public function main()
@@ -27,10 +27,9 @@ class RakutenScrapingShell extends AppShell
 
 				// 取得済みの商品は保存しない
 				$productCode = pq($item)->attr('data-id');
-				if ($this->__productCodeExist($productCode)) {
+				if ($this->__existsProductCode($productCode)) {
 					continue;
 				}
-				$this->log(' RAKUTEN: 商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
 
 				$productName = pq($item)->find('.title')->find('h2')->find('a')->attr('title');
 				if (strpos($productName, JOY) === false) {
@@ -41,7 +40,7 @@ class RakutenScrapingShell extends AppShell
 				$productUrl = pq($item)->find('.image')->find('a')->attr('href');
 				$productPrice = str_replace(['円', ','], '', pq($item)->find('.price')->find('.important')->text());
 
-				$productData = [
+				$product = [
 					'Product' => [
 						'name' => $productName,
 						'code' => $productCode,
@@ -54,7 +53,8 @@ class RakutenScrapingShell extends AppShell
 				];
 
 				$this->Product->create();
-				$this->Product->save($productData);
+				$this->Product->save($product);
+				$this->log(' RAKUTEN: 商品コード'.$productCode.'の商品を登録しました', CRON_LOG);
 			}
 		} catch (Exception $e) {
 			$this->log('楽天の集計中にエラーが発生しました[エラー内容:'.$e->getMessage().']', CRON_LOG);
@@ -70,7 +70,7 @@ class RakutenScrapingShell extends AppShell
 	 * @param string $productCode
 	 * @return bool 商品コードがDBに存在する場合は true
 	 */
-	private function __productCodeExist($productCode)
+	private function __existsProductCode($productCode)
 	{
 		$productCodeList = $this->Product->find('all', [
 			'fields' => 'code'
