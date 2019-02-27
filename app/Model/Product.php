@@ -8,4 +8,5 @@
 class Product extends AppModel
 {
 
+
 }

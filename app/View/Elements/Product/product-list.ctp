@@ -1,4 +1,4 @@
-<div class="item col-md-12 col-lg-3 col-sm-12">
+<div class="item col-md-12 col-lg-4 col-sm-12" style="padding-top: 20px;">
 	<div class="card">
 		<a href="<?= $item['Product']['url']; ?>"><img class="card-img-top" src="<?= $item['Product']['image_url']; ?>" alt="画像がありません"></a>
 		<div class="card-body">

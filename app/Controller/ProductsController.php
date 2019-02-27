@@ -10,13 +10,25 @@ class ProductsController extends AppController
 	public $layout = '';
 
 	public $uses = [
-		'Product',
+		'Product'
+	];
+
+	public $components = [
+		'Paginator',
+	];
+
+	public $paginate = [
+		'order' => [
+			'Product.price' => 'asc'
+		],
+		'limit' => 12,
+		'maxLimit' => 12,
 	];
 
 	public function index()
 	{
-		$productList = $this->Product->find('all');
-		$this->set('productList', $productList);
+		$this->Paginator->settings = $this->paginate;
+		$this->set('productList',$this->paginate('Product'));
 	}
 
 }
