@@ -1,0 +1,22 @@
+main {
+	margin-top: 100px;
+}
+.card {
+	margin: 0 0 10px 0 !important;
+	border: none !important;
+}
+.card:hover {
+	box-shadow: 2px 2px 4px 1px gray;
+	transition: 0.3s;
+}
+.card-deck .card {
+	flex: none !important;
+}
+.product-price {
+	color: #ff4b54;
+	font-weight: bold;
+	font-size: 1.3em;
+}
+.detail-btn {
+	margin-top: 10px;
+}

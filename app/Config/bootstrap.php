@@ -109,3 +109,13 @@ CakeLog::config('error', array(
 	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
 	'file' => 'error',
 ));
+
+// 定数宣言ファイル読み込み
+Configure::load('webScrapingApp');
+
+define('CRON_LOG', 'cron');
+CakeLog::config(CRON_LOG, array(
+	'engine' => 'FileLog',
+	'types' => array(CRON_LOG),
+	'file' => CRON_LOG,
+));
