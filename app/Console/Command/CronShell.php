@@ -26,6 +26,7 @@ class CronShell extends AppShell
 		$str = '';
 		$str = $str."30 00 * * * ".PATH_TO_APP_DIR."Console/cake amazon_scraping\n";
 		$str = $str."45 00 * * * ".PATH_TO_APP_DIR."Console/cake rakuten_scraping\n";
+		$str = $str."00 01 * * * ".PATH_TO_APP_DIR."Console/cake yahoo_scraping\n";
 		return $str;
 	}
 
